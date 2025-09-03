@@ -1,0 +1,19 @@
+{
+  "name": "cafe-gourmet-inventory",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de inventario de granos de café",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": ["cafe", "inventory", "management", "react", "nodejs"],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
