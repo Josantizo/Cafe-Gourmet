@@ -1,23 +1,18 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import CoffeeList from './components/CoffeeList';
-import CoffeeForm from './components/CoffeeForm';
-import CoffeeDetail from './components/CoffeeDetail';
-import Dashboard from './components/Dashboard';
+import { Routes, Route, Link } from 'react-router-dom';
+import InventarioCRUD from './components/InventarioCRUD';
 import './App.css';
 
 function App() {
   return (
-    <div className="App min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
+    <div className="App">
+      <nav style={{ padding: 16, borderBottom: '1px solid #ddd' }}>
+        <Link to="/">Inicio</Link> | <Link to="/inventario">Inventario</Link>
+      </nav>
+      <main style={{ padding: 16 }}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/coffee" element={<CoffeeList />} />
-          <Route path="/coffee/new" element={<CoffeeForm />} />
-          <Route path="/coffee/:id" element={<CoffeeDetail />} />
-          <Route path="/coffee/:id/edit" element={<CoffeeForm />} />
+          <Route path="/" element={<div>Bienvenido a Café Gourmet</div>} />
+          <Route path="/inventario" element={<InventarioCRUD />} />
         </Routes>
       </main>
     </div>
