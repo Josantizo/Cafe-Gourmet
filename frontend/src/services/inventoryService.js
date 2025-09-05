@@ -26,4 +26,17 @@ export async function obtenerGranos(id = null) {
   return json.data;
 }
 
+export async function crearGrano(data) {
+  const response = await fetch(`${API_BASE}/coffee/granos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(json.error || 'Error creando grano');
+  }
+  return json;
+}
+
 

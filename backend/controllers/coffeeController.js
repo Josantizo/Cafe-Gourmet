@@ -47,4 +47,28 @@ const obtenerGranos = async (req, res) => {
   }
 };
 
-module.exports = { actualizarGrano, obtenerGranos };
+const crearGrano = async (req, res) => {
+  try {
+    const datosNuevoGrano = req.body || {};
+
+    // Validar que req.body no esté vacío
+    if (Object.keys(datosNuevoGrano).length === 0) {
+      return res.status(400).json({ error: 'Datos para crear el grano requeridos' });
+    }
+
+    const resultado = await gestorDeInventario.crearGrano(datosNuevoGrano);
+
+    if (!resultado || !resultado.idGranos) {
+      return res.status(500).json({ error: 'No se pudo crear el grano' });
+    }
+
+    return res.status(201).json({
+      message: 'Grano creado exitosamente',
+      ...resultado
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message || 'Error al crear grano' });
+  }
+};
+
+module.exports = { actualizarGrano, obtenerGranos, crearGrano };

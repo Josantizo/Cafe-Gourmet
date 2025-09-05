@@ -1,7 +1,7 @@
 //Aqui va la parte visual de su CRUD, le pueden pedir a cursor que les ayude a crearla.
 
 import React, { useState, useEffect } from 'react';
-import { updateGrano, obtenerGranos } from '../services/inventoryService';
+import { updateGrano, obtenerGranos, crearGrano } from '../services/inventoryService';
 
 export default function InventarioCRUD() {
   const [id, setId] = useState('');
@@ -18,6 +18,7 @@ export default function InventarioCRUD() {
   const [loadingData, setLoadingData] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [mode, setMode] = useState('update'); // 'create' or 'update'
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function InventarioCRUD() {
   };
 
   const seleccionarGrano = (grano) => {
-    setId(grano.id.toString());
+    setId(grano.idGranos.toString());
     setForm({
       TipoGrano: grano.TipoGrano || '',
       Fecha_Ingreso: grano.Fecha_Ingreso ? grano.Fecha_Ingreso.split('T')[0] : '',
@@ -66,9 +67,28 @@ export default function InventarioCRUD() {
           payload[key] = key.includes('Cantidad') || key === 'Precio' ? Number(value) : value;
         }
       });
-      const res = await updateGrano(Number(id), payload);
-      setMessage(`Actualizado correctamente. Filas afectadas: ${res.filasAfectadas}`);
-      // Recargar los datos después de actualizar
+
+      if (mode === 'create') {
+        const res = await crearGrano(payload);
+        setMessage(`Grano creado exitosamente. ID: ${res.idGranos}`);
+        // Limpiar formulario después de crear
+        setForm({
+          TipoGrano: '',
+          Fecha_Ingreso: '',
+          Fecha_Vencimiento: '',
+          Cantidad_Gramos: '',
+          Cantidad_Gramos_Restock: '',
+          Precio: ''
+        });
+      } else {
+        if (!id) {
+          throw new Error('ID es requerido para actualizar');
+        }
+        const res = await updateGrano(Number(id), payload);
+        setMessage(`Actualizado correctamente. Filas afectadas: ${res.filasAfectadas}`);
+      }
+      
+      // Recargar los datos después de crear/actualizar
       await cargarGranos();
     } catch (err) {
       setError(err.message);
@@ -82,7 +102,7 @@ export default function InventarioCRUD() {
       <div className="card-hover" style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', margin: '0 auto', maxWidth: 900 }}>
         <header style={{ marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 28, color: '#111827' }}>Gestión de Inventario</h1>
-          <p style={{ margin: '8px 0 0', color: '#6b7280' }}>CRUD de granos — ahora: Update</p>
+          <p style={{ margin: '8px 0 0', color: '#6b7280' }}>CRUD de granos — Modo: {mode === 'create' ? 'Crear' : 'Actualizar'}</p>
         </header>
 
         {message && (
@@ -134,8 +154,8 @@ export default function InventarioCRUD() {
                 </thead>
                 <tbody>
                   {granos.map((grano) => (
-                    <tr key={grano.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.id}</td>
+                    <tr key={grano.idGranos} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.idGranos}</td>
                       <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.TipoGrano || '-'}</td>
                       <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Fecha_Ingreso ? new Date(grano.Fecha_Ingreso).toLocaleDateString() : '-'}</td>
                       <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Fecha_Vencimiento ? new Date(grano.Fecha_Vencimiento).toLocaleDateString() : '-'}</td>
@@ -167,17 +187,74 @@ export default function InventarioCRUD() {
         </div>
 
         <div style={{ marginTop: 24 }}>
-          <h2 style={{ margin: '0 0 16px 0', fontSize: 20, color: '#111827' }}>Actualizar Grano</h2>
-          <p style={{ margin: '0 0 16px 0', color: '#6b7280', fontSize: '14px' }}>
-            Selecciona un grano de la tabla arriba o ingresa manualmente el ID
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h2 style={{ margin: 0, fontSize: 20, color: '#111827' }}>
+              {mode === 'create' ? 'Crear Nuevo Grano' : 'Actualizar Grano'}
+            </h2>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('create');
+                  setId('');
+                  setForm({
+                    TipoGrano: '',
+                    Fecha_Ingreso: '',
+                    Fecha_Vencimiento: '',
+                    Cantidad_Gramos: '',
+                    Cantidad_Gramos_Restock: '',
+                    Precio: ''
+                  });
+                  setMessage(null);
+                  setError(null);
+                }}
+                style={{
+                  background: mode === 'create' ? '#10b981' : '#f3f4f6',
+                  color: mode === 'create' ? 'white' : '#374151',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Crear
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('update');
+                  setMessage(null);
+                  setError(null);
+                }}
+                style={{
+                  background: mode === 'update' ? '#3b82f6' : '#f3f4f6',
+                  color: mode === 'update' ? 'white' : '#374151',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Actualizar
+              </button>
+            </div>
+          </div>
+          {mode === 'update' && (
+            <p style={{ margin: '0 0 16px 0', color: '#6b7280', fontSize: '14px' }}>
+              Selecciona un grano de la tabla arriba o ingresa manualmente el ID
+            </p>
+          )}
         </div>
 
         <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <label className="form-label">ID del grano</label>
-            <input className="form-input" type="number" value={id} onChange={(e) => setId(e.target.value)} placeholder="Ingresa el ID" required />
-          </div>
+          {mode === 'update' && (
+            <div className="form-group">
+              <label className="form-label">ID del grano</label>
+              <input className="form-input" type="number" value={id} onChange={(e) => setId(e.target.value)} placeholder="Ingresa el ID" required />
+            </div>
+          )}
 
           <div className="table-container" style={{ background: '#fff', padding: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
@@ -215,8 +292,8 @@ export default function InventarioCRUD() {
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
             <button type="button" className="btn" onClick={() => { setId(''); setForm({ TipoGrano: '', Fecha_Ingreso: '', Fecha_Vencimiento: '', Cantidad_Gramos: '', Cantidad_Gramos_Restock: '', Precio: '' }); setMessage(null); setError(null); }} style={{ background: '#f3f4f6', color: '#374151', padding: '0.75rem 1rem' }}>Limpiar</button>
-            <button type="submit" className="btn" disabled={loading} style={{ background: '#f59e0b', color: '#111827', padding: '0.75rem 1rem' }}>
-              {loading ? (<span className="loader" />) : 'Actualizar'}
+            <button type="submit" className="btn" disabled={loading} style={{ background: mode === 'create' ? '#10b981' : '#f59e0b', color: '#111827', padding: '0.75rem 1rem' }}>
+              {loading ? (<span className="loader" />) : (mode === 'create' ? 'Crear Grano' : 'Actualizar')}
             </button>
           </div>
         </form>
