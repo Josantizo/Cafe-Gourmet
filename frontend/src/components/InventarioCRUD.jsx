@@ -1,10 +1,11 @@
 //Aqui va la parte visual de su CRUD, le pueden pedir a cursor que les ayude a crearla.
 
-import React, { useState } from 'react';
-import { updateGrano } from '../services/inventoryService';
+import React, { useState, useEffect } from 'react';
+import { updateGrano, obtenerGranos } from '../services/inventoryService';
 
 export default function InventarioCRUD() {
   const [id, setId] = useState('');
+  const [granos, setGranos] = useState([]);
   const [form, setForm] = useState({
     TipoGrano: '',
     Fecha_Ingreso: '',
@@ -14,8 +15,39 @@ export default function InventarioCRUD() {
     Precio: ''
   });
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    cargarGranos();
+  }, []);
+
+  const cargarGranos = async () => {
+    setLoadingData(true);
+    setError(null);
+    try {
+      const datos = await obtenerGranos();
+      setGranos(datos);
+    } catch (err) {
+      setError('Error al cargar los datos: ' + err.message);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const seleccionarGrano = (grano) => {
+    setId(grano.id.toString());
+    setForm({
+      TipoGrano: grano.TipoGrano || '',
+      Fecha_Ingreso: grano.Fecha_Ingreso ? grano.Fecha_Ingreso.split('T')[0] : '',
+      Fecha_Vencimiento: grano.Fecha_Vencimiento ? grano.Fecha_Vencimiento.split('T')[0] : '',
+      Cantidad_Gramos: grano.Cantidad_Gramos || '',
+      Cantidad_Gramos_Restock: grano.Cantidad_Gramos_Restock || '',
+      Precio: grano.Precio || ''
+    });
+  };
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +68,8 @@ export default function InventarioCRUD() {
       });
       const res = await updateGrano(Number(id), payload);
       setMessage(`Actualizado correctamente. Filas afectadas: ${res.filasAfectadas}`);
+      // Recargar los datos después de actualizar
+      await cargarGranos();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,6 +91,87 @@ export default function InventarioCRUD() {
         {error && (
           <div className="alert alert-error">{error}</div>
         )}
+
+        {/* Tabla de datos */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h2 style={{ margin: 0, fontSize: 20, color: '#111827' }}>Inventario de Granos</h2>
+            <button 
+              onClick={cargarGranos} 
+              disabled={loadingData}
+              style={{ 
+                background: '#10b981', 
+                color: 'white', 
+                border: 'none', 
+                padding: '0.5rem 1rem', 
+                borderRadius: '6px',
+                cursor: loadingData ? 'not-allowed' : 'pointer',
+                opacity: loadingData ? 0.6 : 1
+              }}
+            >
+              {loadingData ? 'Cargando...' : 'Actualizar Lista'}
+            </button>
+          </div>
+          
+          {loadingData ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Cargando datos...</div>
+          ) : granos.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>No hay granos registrados</div>
+          ) : (
+            <div style={{ overflowX: 'auto', background: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f9fafb' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>ID</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Tipo</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Ingreso</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Vencimiento</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Cantidad (g)</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Restock (g)</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Precio (Q/kg)</th>
+                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {granos.map((grano) => (
+                    <tr key={grano.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.id}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.TipoGrano || '-'}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Fecha_Ingreso ? new Date(grano.Fecha_Ingreso).toLocaleDateString() : '-'}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Fecha_Vencimiento ? new Date(grano.Fecha_Vencimiento).toLocaleDateString() : '-'}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Cantidad_Gramos ? grano.Cantidad_Gramos.toFixed(2) : '-'}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Cantidad_Gramos_Restock ? grano.Cantidad_Gramos_Restock.toFixed(2) : '-'}</td>
+                      <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Precio ? `Q ${grano.Precio.toFixed(2)}` : '-'}</td>
+                      <td style={{ padding: '12px', textAlign: 'center' }}>
+                        <button
+                          onClick={() => seleccionarGrano(grano)}
+                          style={{
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Seleccionar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginTop: 24 }}>
+          <h2 style={{ margin: '0 0 16px 0', fontSize: 20, color: '#111827' }}>Actualizar Grano</h2>
+          <p style={{ margin: '0 0 16px 0', color: '#6b7280', fontSize: '14px' }}>
+            Selecciona un grano de la tabla arriba o ingresa manualmente el ID
+          </p>
+        </div>
 
         <form onSubmit={onSubmit}>
           <div className="form-group">
@@ -99,7 +214,7 @@ export default function InventarioCRUD() {
           </div>
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
-            <button type="button" className="btn" onClick={() => { setForm({ TipoGrano: '', Fecha_Ingreso: '', Fecha_Vencimiento: '', Cantidad_Gramos: '', Cantidad_Gramos_Restock: '', Precio: '' }); setMessage(null); setError(null); }} style={{ background: '#f3f4f6', color: '#374151', padding: '0.75rem 1rem' }}>Limpiar</button>
+            <button type="button" className="btn" onClick={() => { setId(''); setForm({ TipoGrano: '', Fecha_Ingreso: '', Fecha_Vencimiento: '', Cantidad_Gramos: '', Cantidad_Gramos_Restock: '', Precio: '' }); setMessage(null); setError(null); }} style={{ background: '#f3f4f6', color: '#374151', padding: '0.75rem 1rem' }}>Limpiar</button>
             <button type="submit" className="btn" disabled={loading} style={{ background: '#f59e0b', color: '#111827', padding: '0.75rem 1rem' }}>
               {loading ? (<span className="loader" />) : 'Actualizar'}
             </button>

@@ -13,4 +13,17 @@ export async function updateGrano(id, data) {
   return json;
 }
 
+export async function obtenerGranos(id = null) {
+  const url = id ? `${API_BASE}/coffee/granos/${id}` : `${API_BASE}/coffee/granos`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(json.error || 'Error obteniendo granos');
+  }
+  return json.data;
+}
+
 

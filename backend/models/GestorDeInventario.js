@@ -66,6 +66,25 @@ class GestorDeInventario {
       connection.release();
     }
   }
+
+
+  // 🔹 READ: obtener granos
+  async obtenerGranos(idGranos = null) {
+    try {
+      let query = "SELECT * FROM granos";
+      let params = [];
+
+      if (idGranos) {
+        query += " WHERE id = ?";
+        params.push(idGranos);
+      }
+
+      const [rows] = await pool.execute(query, params);
+      return rows;
+    } catch (error) {
+      throw new Error("Error al obtener los granos: " + error.message);
+    }
+  }
 }
 
 module.exports = {

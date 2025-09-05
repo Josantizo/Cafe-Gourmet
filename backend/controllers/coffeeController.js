@@ -24,6 +24,27 @@ const actualizarGrano = async (req, res) => {
   }
 };
 
-module.exports = {
-  actualizarGrano
+
+// Nuevo controlador READ
+const obtenerGranos = async (req, res) => {
+  try {
+      const { id } = req.params;
+      const idGranos = id ? Number(id) : null;
+
+      if (id && (!Number.isFinite(idGranos) || idGranos <= 0)) {
+          return res.status(400).json({ error: 'Parámetro id inválido' });
+      }
+
+      const resultado = await gestorDeInventario.obtenerGranos(idGranos);
+
+      if (!resultado || resultado.length === 0) {
+          return res.status(404).json({ error: 'No se encontraron registros' });
+      }
+
+      return res.status(200).json({ data: resultado });
+  } catch (error) {
+      return res.status(500).json({ error: error.message || 'Error al obtener granos' });
+  }
 };
+
+module.exports = { actualizarGrano, obtenerGranos };
