@@ -71,4 +71,25 @@ const crearGrano = async (req, res) => {
   }
 };
 
-module.exports = { actualizarGrano, obtenerGranos, crearGrano };
+const eliminarGrano = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const idGranos = Number(id);
+
+    if (!Number.isFinite(idGranos) || idGranos <= 0) {
+      return res.status(400).json({ error: 'Parámetro id inválido' });
+    }
+
+    const resultado = await gestorDeInventario.eliminarGrano(idGranos);
+
+    if (!resultado || resultado.filasAfectadas === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
+
+    return res.status(200).json({ message: 'Eliminación exitosa', ...resultado });
+  } catch (error) {
+    return res.status(400).json({ error: error.message || 'Error al eliminar' });
+  }
+};
+
+module.exports = { actualizarGrano, obtenerGranos, crearGrano, eliminarGrano };

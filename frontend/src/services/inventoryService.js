@@ -39,4 +39,16 @@ export async function crearGrano(data) {
   return json;
 }
 
+export async function eliminarGrano(id) {
+  const response = await fetch(`${API_BASE}/coffee/granos/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(json.error || 'Error eliminando grano');
+  }
+  return json;
+}
+
 

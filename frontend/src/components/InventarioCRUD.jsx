@@ -1,7 +1,8 @@
 //Aqui va la parte visual de su CRUD, le pueden pedir a cursor que les ayude a crearla.
 
 import React, { useState, useEffect } from 'react';
-import { updateGrano, obtenerGranos, crearGrano } from '../services/inventoryService';
+
+import { updateGrano, obtenerGranos, crearGrano, eliminarGrano } from '../services/inventoryService';
 
 export default function InventarioCRUD() {
   const [id, setId] = useState('');
@@ -19,6 +20,7 @@ export default function InventarioCRUD() {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [mode, setMode] = useState('update'); // 'create' or 'update'
+  const [deletingId, setDeletingId] = useState(null);
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -97,6 +99,29 @@ export default function InventarioCRUD() {
     }
   };
 
+  const handleEliminarGrano = async (idGranos) => {
+    const confirmacion = window.confirm(
+      `¿Estás seguro de que quieres eliminar el grano con ID ${idGranos}? Esta acción no se puede deshacer.`
+    );
+    
+    if (!confirmacion) return;
+
+    setDeletingId(idGranos);
+    setError(null);
+    setMessage(null);
+    
+    try {
+      const res = await eliminarGrano(idGranos);
+      setMessage(`Grano eliminado exitosamente. Filas afectadas: ${res.filasAfectadas}`);
+      // Recargar los datos después de eliminar
+      await cargarGranos();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="container" style={{ padding: '1rem' }}>
       <div className="card-hover" style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', margin: '0 auto', maxWidth: 900 }}>
@@ -149,7 +174,7 @@ export default function InventarioCRUD() {
                     <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Cantidad (g)</th>
                     <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Restock (g)</th>
                     <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Precio (Q/kg)</th>
-                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Acción</th>
+                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e5e7eb', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -163,20 +188,38 @@ export default function InventarioCRUD() {
                       <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Cantidad_Gramos_Restock ? grano.Cantidad_Gramos_Restock.toFixed(2) : '-'}</td>
                       <td style={{ padding: '12px', fontSize: '14px', color: '#374151' }}>{grano.Precio ? `Q ${grano.Precio.toFixed(2)}` : '-'}</td>
                       <td style={{ padding: '12px', textAlign: 'center' }}>
-                        <button
-                          onClick={() => seleccionarGrano(grano)}
-                          style={{
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
-                          Seleccionar
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                          <button
+                            onClick={() => seleccionarGrano(grano)}
+                            style={{
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            Seleccionar
+                          </button>
+                          <button
+                            onClick={() => handleEliminarGrano(grano.idGranos)}
+                            disabled={deletingId === grano.idGranos}
+                            style={{
+                              background: deletingId === grano.idGranos ? '#9ca3af' : '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '4px',
+                              cursor: deletingId === grano.idGranos ? 'not-allowed' : 'pointer',
+                              fontSize: '12px',
+                              opacity: deletingId === grano.idGranos ? 0.6 : 1
+                            }}
+                          >
+                            {deletingId === grano.idGranos ? 'Eliminando...' : 'Eliminar'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

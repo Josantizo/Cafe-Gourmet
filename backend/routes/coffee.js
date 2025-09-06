@@ -5,7 +5,8 @@ const express = require('express');
 const router = express.Router();
 
 
-const { actualizarGrano, obtenerGranos, crearGrano } = require('../controllers/coffeeController');
+
+const { actualizarGrano, obtenerGranos, crearGrano, eliminarGrano } = require('../controllers/coffeeController');
 
 // PUT /api/coffee/granos/:id
 router.put('/granos/:id', actualizarGrano);
@@ -18,5 +19,7 @@ router.get('/granos', obtenerGranos);
 router.get('/granos/:id', obtenerGranos);
 
 router.post('/granos', crearGrano);
+router.delete('/granos/:id', eliminarGrano);
+
 
 module.exports = router;

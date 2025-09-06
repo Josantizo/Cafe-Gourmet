@@ -129,6 +129,25 @@ class GestorDeInventario {
       connection.release();
     }
   }
+
+  async eliminarGrano(idGranos) {
+    if (!idGranos) {
+      throw new Error('idGranos es requerido');
+    }
+
+    const sql = `DELETE FROM granos WHERE idGranos = ?`;
+
+    const connection = await pool.getConnection();
+    try {
+      const [resultado] = await connection.execute(sql, [idGranos]);
+      return {
+        idGranos,
+        filasAfectadas: resultado.affectedRows || 0
+      };
+    } finally {
+      connection.release();
+    }
+  }
 }
 
 
