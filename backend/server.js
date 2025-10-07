@@ -10,6 +10,7 @@ const { testConnection } = require('./config/database');
 
 // Importar rutas
 const coffeeRoutes = require('./routes/coffee');
+const facturacionRoutes = require('./routes/facturacion');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rutas de la API
 app.use('/api/coffee', coffeeRoutes);
+app.use('/api', facturacionRoutes);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {

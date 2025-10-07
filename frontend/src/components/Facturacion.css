@@ -1,0 +1,657 @@
+/* Facturación Styles */
+.facturacion {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+.facturacion-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.facturacion-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 1rem 0;
+}
+
+.facturacion-header p {
+  font-size: 1.2rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.facturacion-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Cliente Section */
+.cliente-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.cliente-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cliente-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Productos Section */
+.productos-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.productos-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.productos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.producto-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.producto-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--combo-color);
+}
+
+.producto-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: var(--combo-color);
+}
+
+.producto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.producto-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.producto-precio {
+  background: var(--combo-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.producto-descripcion {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.producto-stock {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 0.75rem;
+}
+
+.producto-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.producto-features li {
+  font-size: 0.8rem;
+  color: #4b5563;
+  padding: 0.25rem 0;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.producto-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--combo-color);
+  font-weight: bold;
+  font-size: 0.7rem;
+}
+
+.agregar-button {
+  width: 100%;
+  background: var(--combo-color);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.agregar-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.agregar-button:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Carrito Section */
+.carrito-section {
+  grid-column: 1 / -1;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+.carrito-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.carrito-vacio {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+}
+
+.carrito-vacio p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.carrito-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.carrito-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.item-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  padding: 0.25rem;
+  border: 1px solid #d1d5db;
+}
+
+.item-controls button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #374151;
+  transition: background-color 0.3s ease;
+}
+
+.item-controls button:hover {
+  background: #e5e7eb;
+}
+
+.item-controls span {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.item-total {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.1rem;
+  min-width: 80px;
+  text-align: right;
+}
+
+.quitar-button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.quitar-button:hover {
+  background: #fecaca;
+}
+
+/* Pago Section */
+.pago-section {
+  grid-column: 1 / -1;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.resumen-pago {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.resumen-pago h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.2rem;
+}
+
+.resumen-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resumen-item:last-child {
+  border-bottom: none;
+}
+
+.resumen-item.total {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1f2937;
+  background: #f0f9ff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  border: 2px solid #0ea5e9;
+}
+
+.metodo-pago h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.2rem;
+}
+
+.pago-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pago-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.pago-options label:hover {
+  background: #f1f5f9;
+}
+
+.pago-options input[type="radio"] {
+  margin: 0;
+}
+
+.pago-options input[type="radio"]:checked + span {
+  font-weight: 600;
+}
+
+.pago-options label:has(input:checked) {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.procesar-pago-button {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.procesar-pago-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* Factura Generada */
+.factura-generada {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.factura-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.factura-header h2 {
+  margin: 0;
+  color: #10b981;
+  font-size: 1.8rem;
+}
+
+.factura-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.imprimir-button, .nueva-venta-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.imprimir-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.imprimir-button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.nueva-venta-button {
+  background: #10b981;
+  color: white;
+}
+
+.nueva-venta-button:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.factura-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.factura-info {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.factura-info h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.3rem;
+}
+
+.factura-info p {
+  margin: 0.5rem 0;
+  color: #374151;
+}
+
+.factura-items {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.factura-items h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.factura-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.factura-item:last-child {
+  border-bottom: none;
+}
+
+.factura-totales {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid #0ea5e9;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #bae6fd;
+}
+
+.total-line:last-child {
+  border-bottom: none;
+}
+
+.total-line.final {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1f2937;
+  background: #dbeafe;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.factura-metodo {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid #22c55e;
+}
+
+.factura-metodo p {
+  margin: 0.5rem 0;
+  color: #374151;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .facturacion-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .pago-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .facturacion {
+    padding: 1rem;
+  }
+  
+  .facturacion-header h1 {
+    font-size: 2rem;
+  }
+  
+  .carrito-item {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  
+  .item-controls {
+    justify-content: center;
+  }
+  
+  .factura-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .factura-actions {
+    justify-content: center;
+  }
+}
+
+@media print {
+  .facturacion-header,
+  .factura-actions {
+    display: none;
+  }
+  
+  .factura-generada {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
