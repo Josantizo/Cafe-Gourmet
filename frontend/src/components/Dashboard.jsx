@@ -3,6 +3,7 @@ import InventarioCRUD from './InventarioCRUD';
 import ComboCreator from './ComboCreator';
 import Facturacion from './Facturacion';
 import ComboRecommendations from './ComboRecommendations';
+import ProcesoProduccion from './ProcesoProduccion';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -13,6 +14,7 @@ function Dashboard() {
     { id: 'combos', label: 'Crear Combos', icon: '☕' },
     { id: 'recomendaciones', label: 'Recomendaciones', icon: '🎯' },
     { id: 'facturacion', label: 'Facturación', icon: '💳' },
+    { id: 'produccion', label: 'Producción', icon: '🏭' },
     { id: 'reportes', label: 'Reportes', icon: '📊' },
     { id: 'configuracion', label: 'Configuración', icon: '⚙️' }
   ];
@@ -55,6 +57,7 @@ function Dashboard() {
           {activeTab === 'combos' && <ComboCreator />}
           {activeTab === 'recomendaciones' && <ComboRecommendations />}
           {activeTab === 'facturacion' && <Facturacion />}
+          {activeTab === 'produccion' && <ProcesoProduccion />}
           {activeTab === 'reportes' && (
             <div className="coming-soon">
               <h2>📊 Reportes</h2>
