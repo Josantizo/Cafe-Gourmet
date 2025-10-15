@@ -11,10 +11,12 @@ const { testConnection } = require('./config/database');
 // Importar rutas
 const coffeeRoutes = require('./routes/coffee');
 const facturacionRoutes = require('./routes/facturacion');
-const procesoProduccionRoutes = require('./routes/procesoProduccion');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Importar el adaptador de proveedor (Stripe)
+const ProveedorAdapter = require('./Adapter/ProveedorAdapter');
 
 // Middleware de seguridad
 app.use(helmet());
@@ -35,7 +37,6 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas de la API
 app.use('/api/coffee', coffeeRoutes);
 app.use('/api', facturacionRoutes);
-app.use('/api/proceso-produccion', procesoProduccionRoutes);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -44,6 +45,25 @@ app.get('/api/health', (req, res) => {
     message: 'Sistema de Gestión de Café Gourmet funcionando correctamente',
     timestamp: new Date().toISOString()
   });
+});
+
+// Ruta de prueba para Stripe (crear sesión de pago)
+app.post('/api/pago', async (req, res) => {
+  try {
+    const { nombreProducto, precio, cantidad } = req.body;
+
+    // Llamamos al adaptador para crear la sesión
+    const sessionURL = await ProveedorAdapter.crearSesionPago({
+      nombreProducto,
+      precio,
+      cantidad,
+    });
+
+    res.json({ url: sessionURL });
+  } catch (error) {
+    console.error('Error al crear sesión de pago:', error);
+    res.status(500).json({ error: 'No se pudo procesar el pago.' });
+  }
 });
 
 // Middleware para manejar rutas no encontradas
@@ -65,9 +85,9 @@ app.use((err, req, res, next) => {
 
 // Iniciar servidor
 app.listen(PORT, async () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`📊 API disponible en http://localhost:${PORT}/api`);
-  console.log(`🏥 Health check en http://localhost:${PORT}/api/health`);
+  console.log(🚀 Servidor corriendo en puerto ${PORT});
+  console.log(📊 API disponible en http://localhost:${PORT}/api);
+  console.log(🏥 Health check en http://localhost:${PORT}/api/health);
   
   // Probar conexión a la base de datos
   await testConnection();
