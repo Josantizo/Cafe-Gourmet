@@ -192,19 +192,20 @@ class FacadeDeProduccion {
       });
 
       // Calcular métricas clave
-      const totalProcesos = procesos.length;
-      const procesosCompletados = procesos.filter(p => p.estadoActual === 'venta').length;
+      const listaProcesos = procesos.procesos || [];
+      const totalProcesos = listaProcesos.length;
+      const procesosCompletados = listaProcesos.filter(p => p.estadoActual === 'venta').length;
       const procesosEnProceso = totalProcesos - procesosCompletados;
       const tasaCompletacion = totalProcesos > 0 ? (procesosCompletados / totalProcesos * 100).toFixed(2) : 0;
 
-      const totalGramos = procesos.reduce((sum, p) => sum + p.cantidadGramos, 0);
-      const gramosVendidos = procesos
+      const totalGramos = listaProcesos.reduce((sum, p) => sum + (p.cantidadGramos || 0), 0);
+      const gramosVendidos = listaProcesos
         .filter(p => p.estadoActual === 'venta')
-        .reduce((sum, p) => sum + p.cantidadGramos, 0);
+        .reduce((sum, p) => sum + (p.cantidadGramos || 0), 0);
 
       // Distribución por estado
       const distribucionEstados = {};
-      procesos.forEach(p => {
+      listaProcesos.forEach(p => {
         distribucionEstados[p.estadoActual] = (distribucionEstados[p.estadoActual] || 0) + 1;
       });
 

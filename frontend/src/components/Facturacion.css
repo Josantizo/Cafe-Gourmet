@@ -645,13 +645,235 @@
 }
 
 @media print {
+  /* Ocultar elementos del dashboard */
+  .dashboard > .navbar,
   .facturacion-header,
-  .factura-actions {
-    display: none;
+  .factura-actions,
+  .imprimir-button,
+  .nueva-venta-button {
+    display: none !important;
+  }
+  
+  /* Resetear estilos para impresión */
+  body {
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+  
+  .facturacion {
+    padding: 0 !important;
   }
   
   .factura-generada {
-    box-shadow: none;
-    border: 1px solid #000;
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 210mm !important;
+    padding: 15mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+  }
+  
+  /* Header de la empresa */
+  .factura-generada::before {
+    content: "";
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #000;
+  }
+  
+  .factura-header {
+    display: block !important;
+    visibility: visible !important;
+    background: white !important;
+    border: 2px solid #000 !important;
+    padding: 15px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .factura-header h2 {
+    color: #000 !important;
+    font-size: 18pt !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+  }
+  
+  /* Logo y nombre de la empresa */
+  .factura-content::before {
+    content: "☕ CAFÉ GOURMET";
+    display: block;
+    text-align: center;
+    font-size: 28pt;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    letter-spacing: 2px;
+  }
+  
+  .factura-content::after {
+    content: "Sistema de Gestión de Café Gourmet";
+    display: block;
+    text-align: center;
+    font-size: 10pt;
+    margin-bottom: 20px;
+    color: #666;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Información de la factura */
+  .factura-info,
+  .factura-content,
+  .factura-items,
+  .factura-totales,
+  .factura-metodo {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .factura-info {
+    border: 1px solid #000 !important;
+    padding: 15px !important;
+    margin-bottom: 20px !important;
+    background: #f9f9f9 !important;
+  }
+  
+  .factura-info h3 {
+    color: #000 !important;
+    font-size: 14pt !important;
+    margin-top: 0 !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 5px !important;
+  }
+  
+  .factura-info p {
+    margin: 8px 0 !important;
+    font-size: 11pt !important;
+    color: #000 !important;
+  }
+  
+  .factura-info p strong {
+    color: #000 !important;
+  }
+  
+  /* Items de la factura */
+  .factura-items {
+    border: 1px solid #000 !important;
+    padding: 15px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .factura-items h4 {
+    color: #000 !important;
+    font-size: 12pt !important;
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #000 !important;
+    padding-bottom: 5px !important;
+  }
+  
+  .factura-item {
+    border-bottom: 1px dashed #ccc !important;
+    padding: 10px 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 11pt !important;
+    color: #000 !important;
+  }
+  
+  .factura-item:last-child {
+    border-bottom: none !important;
+  }
+  
+  .factura-item span {
+    color: #000 !important;
+  }
+  
+  /* Totales */
+  .factura-totales {
+    border: 2px solid #000 !important;
+    padding: 15px !important;
+    background: #f5f5f5 !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .total-line {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 8px 0 !important;
+    font-size: 11pt !important;
+    color: #000 !important;
+  }
+  
+  .total-line span {
+    color: #000 !important;
+  }
+  
+  .total-line.final {
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    border-top: 2px solid #000 !important;
+    padding-top: 10px !important;
+    margin-top: 10px !important;
+    color: #000 !important;
+  }
+  
+  .total-line.final span {
+    color: #000 !important;
+  }
+  
+  /* Método de pago */
+  .factura-metodo {
+    margin-top: 20px !important;
+    padding: 15px !important;
+    border: 1px solid #000 !important;
+    background: white !important;
+  }
+  
+  .factura-metodo p {
+    margin: 8px 0 !important;
+    font-size: 11pt !important;
+    color: #000 !important;
+  }
+  
+  .factura-metodo p strong {
+    color: #000 !important;
+  }
+  
+  /* Footer */
+  .factura-metodo::after {
+    content: "──────────────────────────────────────\A\A✓ Gracias por su compra\A\AContacto: www.cafegourmet.com | Tel: (502) 1234-5678\AGuatemala, C.A.";
+    white-space: pre;
+    display: block;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 9pt;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  /* Código de barras simulado */
+  .factura-content {
+    position: relative;
+  }
+  
+  /* Asegurar que se imprima en una sola página */
+  .factura-generada {
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+  
+  /* Ajustar tamaño de fuente para que quepa todo */
+  * {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

@@ -268,6 +268,22 @@ class ProcesoProduccionController {
 
   // ===== MÉTODOS DE DASHBOARD =====
 
+  // Endpoint simple para probar la conexión
+  async probarConexion(req, res) {
+    try {
+      res.json({
+        success: true,
+        message: 'Conexión exitosa',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
   // Obtener métricas para dashboard
   async obtenerMetricasDashboard(req, res) {
     try {
@@ -282,23 +298,49 @@ class ProcesoProduccionController {
       }
 
       // Obtener resumen ejecutivo
-      const resumenEjecutivo = await this.facade.generarResumenEjecutivo(añoNum);
+      let resumenEjecutivo;
+      try {
+        resumenEjecutivo = await this.facade.generarResumenEjecutivo(añoNum);
+      } catch (error) {
+        console.warn('Error obteniendo resumen ejecutivo:', error.message);
+        resumenEjecutivo = { data: { resumen: {} } };
+      }
       
       // Obtener procesos próximos a vencer
-      const procesosProximosAVencer = await this.facade.obtenerProcesosProximosAVencer(30);
+      let procesosProximosAVencer;
+      try {
+        procesosProximosAVencer = await this.facade.obtenerProcesosProximosAVencer(30);
+      } catch (error) {
+        console.warn('Error obteniendo procesos próximos a vencer:', error.message);
+        procesosProximosAVencer = { data: [] };
+      }
       
       // Obtener distribución por estado
-      const procesos = await this.facade.obtenerProcesos({
-        fechaInicio: `${añoNum}-01-01`,
-        fechaFin: `${añoNum}-12-31`
-      });
+      let procesos;
+      try {
+        procesos = await this.facade.obtenerProcesos({
+          fechaInicio: `${añoNum}-01-01`,
+          fechaFin: `${añoNum}-12-31`
+        });
+      } catch (error) {
+        console.warn('Error obteniendo procesos:', error.message);
+        procesos = { data: { total: 0 } };
+      }
 
       const metricas = {
         año: añoNum,
-        resumen: resumenEjecutivo.data.resumen,
-        procesosProximosAVencer: procesosProximosAVencer.data,
-        distribucionEstados: resumenEjecutivo.data.resumen.distribucionEstados,
-        totalProcesos: procesos.data.total,
+        resumen: resumenEjecutivo.data?.resumen || {
+          totalProcesos: 0,
+          procesosCompletados: 0,
+          procesosEnProceso: 0,
+          tasaCompletacion: '0%',
+          totalGramos: 0,
+          gramosVendidos: 0,
+          distribucionEstados: {}
+        },
+        procesosProximosAVencer: procesosProximosAVencer.data || [],
+        distribucionEstados: resumenEjecutivo.data?.resumen?.distribucionEstados || {},
+        totalProcesos: procesos.data?.total || 0,
         fechaGeneracion: new Date()
       };
 

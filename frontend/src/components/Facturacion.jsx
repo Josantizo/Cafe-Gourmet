@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import StripePayment from './StripePayment';
 import './Facturacion.css';
 
 function Facturacion() {
@@ -8,6 +9,8 @@ function Facturacion() {
   const [metodoPago, setMetodoPago] = useState('efectivo');
   const [mostrarFactura, setMostrarFactura] = useState(false);
   const [facturaGenerada, setFacturaGenerada] = useState(null);
+  const [mostrarStripeModal, setMostrarStripeModal] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const comboTypes = [
     {
@@ -91,6 +94,19 @@ function Facturacion() {
       return;
     }
 
+    // Si el método de pago es tarjeta, mostrar modal de Stripe
+    if (metodoPago === 'tarjeta') {
+      setMostrarStripeModal(true);
+      return;
+    }
+
+    // Para otros métodos de pago, procesar directamente
+    await procesarPagoDirecto();
+  };
+
+  const procesarPagoDirecto = async () => {
+    setIsProcessingPayment(true);
+    
     const facturaData = {
       cliente,
       items: carrito,
@@ -129,7 +145,72 @@ function Facturacion() {
     } catch (error) {
       console.error('Error al procesar el pago:', error);
       alert(`Error al procesar el pago: ${error.message}`);
+    } finally {
+      setIsProcessingPayment(false);
     }
+  };
+
+  const handleStripePaymentSuccess = async (paymentIntent) => {
+    console.log('Pago con Stripe exitoso:', paymentIntent);
+    
+    // Crear la factura con el método de pago como "tarjeta"
+    const facturaData = {
+      cliente,
+      items: carrito,
+      subtotal: total,
+      impuesto: total * 0.12, // IVA 12%
+      total: total * 1.12,
+      metodoPago: 'tarjeta',
+      stripePaymentId: paymentIntent.id
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/facturas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(facturaData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error del servidor: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setFacturaGenerada(result.data);
+        setMostrarFactura(true);
+        
+        // Limpiar carrito después del pago
+        setCarrito([]);
+        setCliente({ nombre: '', telefono: '', email: '' });
+      } else {
+        throw new Error(result.message || 'Error al procesar el pago');
+      }
+      
+    } catch (error) {
+      console.error('Error al crear factura después del pago:', error);
+      alert(`Error al crear la factura: ${error.message}`);
+    }
+  };
+
+  const handleStripePaymentError = (error) => {
+    console.error('Error en pago con Stripe:', error);
+    alert(`Error en el pago: ${error.message}`);
+  };
+
+  const getPaymentDataForStripe = () => {
+    // Crear un objeto que represente el total del carrito para Stripe
+    const totalCarrito = carrito.reduce((sum, item) => sum + (item.price * item.cantidad), 0);
+    
+    return {
+      nombreProducto: `Compra de ${carrito.length} combo(s)`,
+      precio: totalCarrito,
+      cantidad: 1,
+      cliente: cliente
+    };
   };
 
   const imprimirFactura = () => {
@@ -303,8 +384,21 @@ function Facturacion() {
                 </div>
               </div>
 
-              <button className="procesar-pago-button" onClick={procesarPago}>
-                💳 Procesar Pago
+              <button 
+                className="procesar-pago-button" 
+                onClick={procesarPago}
+                disabled={isProcessingPayment}
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <span className="loader"></span>
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    💳 Procesar Pago
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -369,6 +463,15 @@ function Facturacion() {
           </div>
         </div>
       )}
+
+      {/* Modal de Pago con Stripe */}
+      <StripePayment
+        isOpen={mostrarStripeModal}
+        onClose={() => setMostrarStripeModal(false)}
+        paymentData={getPaymentDataForStripe()}
+        onPaymentSuccess={handleStripePaymentSuccess}
+        onPaymentError={handleStripePaymentError}
+      />
     </div>
   );
 }

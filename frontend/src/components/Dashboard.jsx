@@ -4,6 +4,7 @@ import ComboCreator from './ComboCreator';
 import Facturacion from './Facturacion';
 import ComboRecommendations from './ComboRecommendations';
 import ProcesoProduccion from './ProcesoProduccion';
+import PatronesComportamiento from './PatronesComportamiento';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -15,6 +16,7 @@ function Dashboard() {
     { id: 'recomendaciones', label: 'Recomendaciones', icon: '🎯' },
     { id: 'facturacion', label: 'Facturación', icon: '💳' },
     { id: 'produccion', label: 'Producción', icon: '🏭' },
+    { id: 'patrones', label: 'Administrador de Tareas', icon: '📋' },
     { id: 'reportes', label: 'Reportes', icon: '📊' },
     { id: 'configuracion', label: 'Configuración', icon: '⚙️' }
   ];
@@ -58,6 +60,7 @@ function Dashboard() {
           {activeTab === 'recomendaciones' && <ComboRecommendations />}
           {activeTab === 'facturacion' && <Facturacion />}
           {activeTab === 'produccion' && <ProcesoProduccion />}
+          {activeTab === 'patrones' && <PatronesComportamiento />}
           {activeTab === 'reportes' && (
             <div className="coming-soon">
               <h2>📊 Reportes</h2>

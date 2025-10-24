@@ -69,6 +69,12 @@ router.get('/proximos-vencer', (req, res) => {
 
 // ===== RUTAS DE DASHBOARD =====
 
+// GET /api/proceso-produccion/test
+// Endpoint simple para probar conexión
+router.get('/test', (req, res) => {
+  controller.probarConexion(req, res);
+});
+
 // GET /api/proceso-produccion/dashboard/metricas
 // Obtener métricas para dashboard
 // Query param: año (opcional, default: año actual)
