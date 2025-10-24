@@ -40,13 +40,13 @@ function ProcesoProduccion() {
         operacionesCompositeService.obtenerEstadisticasOperaciones()
       ]);
 
-      setProcesos(procesosData.data.procesos);
-      setEstados(estadosData.data);
-      setMetricas(metricasData.data);
-      setTiposOperaciones(tiposData.data.tipos);
-      setOperacionesProgramadas(operacionesData.data.operaciones);
-      setHistorialOperaciones(historialData.data.historial);
-      setEstadisticasOperaciones(estadisticasData.data.estadisticas);
+      setProcesos(procesosData.data?.procesos || []);
+      setEstados(estadosData.data || {});
+      setMetricas(metricasData.data || {});
+      setTiposOperaciones(tiposData.data?.tipos || []);
+      setOperacionesProgramadas(operacionesData.data?.operaciones || []);
+      setHistorialOperaciones(historialData.data?.historial || []);
+      setEstadisticasOperaciones(estadisticasData.data?.estadisticas || {});
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -201,7 +201,10 @@ function DashboardView({ metricas, procesos, estados, onRefresh, onNavigate }) {
     );
   }
 
-  const { resumen, procesosProximosAVencer } = metricas || {};
+  const { resumen = {}, procesosProximosAVencer = {} } = metricas?.data || {};
+  
+  // Asegurar que distribucionEstados existe
+  const distribucionEstados = resumen.distribucionEstados || {};
 
   return (
     <div className="dashboard-view">
@@ -244,29 +247,35 @@ function DashboardView({ metricas, procesos, estados, onRefresh, onNavigate }) {
       <div className="dashboard-section">
         <h2>Distribución por Estados</h2>
         <div className="estados-grid">
-          {resumen.distribucionEstados && Object.entries(resumen.distribucionEstados).map(([estado, cantidad]) => (
-            <div key={estado} className="estado-card">
-              <div 
-                className="estado-indicator"
-                style={{ backgroundColor: procesoProduccionService.obtenerColorEstado(estado) }}
-              >
-                {procesoProduccionService.obtenerIconoEstado(estado)}
+          {Object.keys(distribucionEstados).length > 0 ? (
+            Object.entries(distribucionEstados).map(([estado, cantidad]) => (
+              <div key={estado} className="estado-card">
+                <div 
+                  className="estado-indicator"
+                  style={{ backgroundColor: procesoProduccionService.obtenerColorEstado(estado) }}
+                >
+                  {procesoProduccionService.obtenerIconoEstado(estado)}
+                </div>
+                <div className="estado-content">
+                  <h4>{procesoProduccionService.obtenerNombreEstado(estado)}</h4>
+                  <p>{cantidad} procesos</p>
+                </div>
               </div>
-              <div className="estado-content">
-                <h4>{procesoProduccionService.obtenerNombreEstado(estado)}</h4>
-                <p>{cantidad} procesos</p>
-              </div>
+            ))
+          ) : (
+            <div className="no-data">
+              <p>No hay datos de distribución de estados disponibles</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
       {/* Procesos próximos a vencer */}
-      {procesosProximosAVencer.total > 0 && (
+      {procesosProximosAVencer?.total > 0 && (
         <div className="dashboard-section">
           <h2>Procesos Próximos a Vencer</h2>
           <div className="proximos-vencer">
-            {procesosProximosAVencer.procesos.slice(0, 5).map(proceso => (
+            {procesosProximosAVencer?.procesos?.slice(0, 5).map(proceso => (
               <div key={proceso.idProceso} className="proceso-card">
                 <div className="proceso-header">
                   <span className="proceso-tipo">{proceso.tipoGrano}</span>

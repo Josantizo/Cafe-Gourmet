@@ -8,17 +8,23 @@
     "dev": "nodemon server.js",
     "init-db": "node database/init-mysql.js"
   },
-  "keywords": ["cafe", "api", "inventory", "express"],
+  "keywords": [
+    "cafe",
+    "api",
+    "inventory",
+    "express"
+  ],
   "author": "Tu Nombre",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.5",
-    "express-validator": "^7.0.1",
-    "dotenv": "^16.3.1"
+    "stripe": "^19.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

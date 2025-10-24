@@ -11,12 +11,15 @@ const { testConnection } = require('./config/database');
 // Importar rutas
 const coffeeRoutes = require('./routes/coffee');
 const facturacionRoutes = require('./routes/facturacion');
+const procesoProduccionRoutes = require('./routes/procesoProduccion');
+const patternsRoutes = require('./routes/patterns');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Importar el adaptador de proveedor (Stripe)
-const ProveedorAdapter = require('./Adapter/ProveedorAdapter');
+const ProveedorAdapter = require('./adapter/ProveedorAdapter');
+const proveedor = new ProveedorAdapter(process.env.STRIPE_SECRET_KEY);
 
 // Middleware de seguridad
 app.use(helmet());
@@ -26,7 +29,7 @@ app.use(morgan('combined'));
 
 // Middleware de CORS
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://localhost:5001'],
   credentials: true
 }));
 
@@ -37,6 +40,8 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas de la API
 app.use('/api/coffee', coffeeRoutes);
 app.use('/api', facturacionRoutes);
+app.use('/api/proceso-produccion', procesoProduccionRoutes);
+app.use('/api/patterns', patternsRoutes);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -47,21 +52,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Ruta de prueba para Stripe (crear sesión de pago)
+// Ruta de pago (PaymentIntent) con Stripe
 app.post('/api/pago', async (req, res) => {
   try {
     const { nombreProducto, precio, cantidad } = req.body;
+    const monto = Number(precio) * Number(cantidad || 1);
 
-    // Llamamos al adaptador para crear la sesión
-    const sessionURL = await ProveedorAdapter.crearSesionPago({
-      nombreProducto,
-      precio,
-      cantidad,
+    const pago = await proveedor.crearPago({
+      monto,
+      descripcion: nombreProducto,
+      moneda: 'mxn',
     });
 
-    res.json({ url: sessionURL });
+    // Devuelve objeto adaptado que incluye clientSecret para el frontend
+    res.json(pago);
   } catch (error) {
-    console.error('Error al crear sesión de pago:', error);
+    console.error('Error al crear PaymentIntent:', error);
     res.status(500).json({ error: 'No se pudo procesar el pago.' });
   }
 });
@@ -85,9 +91,9 @@ app.use((err, req, res, next) => {
 
 // Iniciar servidor
 app.listen(PORT, async () => {
-  console.log(🚀 Servidor corriendo en puerto ${PORT});
-  console.log(📊 API disponible en http://localhost:${PORT}/api);
-  console.log(🏥 Health check en http://localhost:${PORT}/api/health);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`📊 API disponible en http:localhost:${PORT}/api`);
+  console.log(`🏥 Health check en http:localhost:${PORT}/api/health`);
   
   // Probar conexión a la base de datos
   await testConnection();
